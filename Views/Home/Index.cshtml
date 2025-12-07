@@ -1,53 +1,51 @@
-﻿@model IEnumerable<WebApplication1.Models.TextEntry>
+﻿@model IEnumerable<WebApplication1.Models.Product>
 
 @{
-    ViewData["Title"] = "Learn ASP.NET Core";
+    ViewData["Title"] = "Ana Sayfa";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Hello world</h1>
-    <p>Explore the world of <a href="https://learn.microsoft.com/aspnet/core">ASP.NET Core</a> and build modern web applications.</p>
+<div class="text-center mb-5">
+    <h1 class="display-4">Ürün Satış Portalı</h1>
+    <p class="lead">Hoşgeldiniz! En yeni ürünlerimizi aşağıda bulabilirsiniz.</p>
 </div>
 
-<section>
-    <h2>Interactive Section</h2>
-    <form method="post" asp-action="SaveText">
-        <div class="form-group">
-            <label for="content">Share Your Thoughts:</label>
-            <input type="text" class="form-control" id="content" name="content" placeholder="Enter your text here..." required />
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-</section>
-
-<hr />
-
-<section>
-    <h2>Community Contributions</h2>
-    <p>Below are some of the thoughts shared by our community members:</p>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Content</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var entry in Model)
+<div class="container">
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var product in Model)
             {
-                <tr>
-                    <td>@entry.Id</td>
-                    <td>@entry.Content</td>
-                    <td>
-                        <form method="post" asp-action="DeleteText" asp-route-id="@entry.Id" style="display:inline;">
-                            <button type="submit" class="btn btn-danger btn-sm">
-                                <i class="fas fa-trash-alt"></i> Delete
-                            </button>
-                        </form>
-                    </td>
-                </tr>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        @if (!string.IsNullOrEmpty(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-secondary text-white d-flex justify-content-center align-items-center" style="height: 200px;">
+                                <span>Resim Yok</span>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text text-truncate">@product.Description</p>
+                            <h6 class="card-subtitle mb-2 text-muted">@product.Price.ToString("C")</h6>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <a href="#" class="btn btn-primary w-100">İncele</a>
+                        </div>
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
-</section>
+        }
+        else
+        {
+            <div class="col-12 text-center">
+                <div class="alert alert-warning" role="alert">
+                    Henüz eklenmiş bir ürün bulunmamaktadır. Yönetici panelinden ürün ekleyebilirsiniz.
+                </div>
+            </div>
+        }
+    </div>
+</div>

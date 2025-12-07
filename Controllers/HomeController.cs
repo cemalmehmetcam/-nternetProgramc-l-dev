@@ -1,64 +1,55 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Models;
+using WebApplication1.Repositories;
+using System.Diagnostics;
 
-namespace WebApplication1.Controllers;
-
-public class HomeController : Controller
+namespace WebApplication1.Controllers
 {
-    private readonly ILogger<HomeController> _logger;
-    private readonly ApplicationDbContext _context;
-
-    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+    public class HomeController : Controller
     {
-        _logger = logger;
-        _context = context;
-    }
+        private readonly ILogger<HomeController> _logger;
+        private readonly IRepository<Product> _productRepository;
+        private readonly IRepository<Admin> _adminRepository; // Admin işlemleri için bunu ekledik
 
-    public IActionResult Index()
-    {
-        var textEntries = _context.TextEntries.ToList();
-        return View(textEntries);
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    public IActionResult GurkanFikretGunak()
-    {
-        ViewData["Message"] = "Gürkan Fikret Günak";
-        return View();
-    }
-
-    [HttpPost]
-    public IActionResult SaveText(string content)
-    {
-        if (!string.IsNullOrEmpty(content))
+        // Constructor'a (yapıcı metod) Admin Repository'i de ekliyoruz
+        public HomeController(ILogger<HomeController> logger, IRepository<Product> productRepository, IRepository<Admin> adminRepository)
         {
-            var textEntry = new TextEntry { Content = content };
-            _context.TextEntries.Add(textEntry);
-            _context.SaveChanges();
+            _logger = logger;
+            _productRepository = productRepository;
+            _adminRepository = adminRepository;
         }
-        return RedirectToAction("Index");
-    }
 
-    [HttpPost]
-    public IActionResult DeleteText(int id)
-    {
-        var textEntry = _context.TextEntries.FirstOrDefault(e => e.Id == id);
-        if (textEntry != null)
+        public IActionResult Index()
         {
-            _context.TextEntries.Remove(textEntry);
-            _context.SaveChanges();
-        }
-        return RedirectToAction("Index");
-    }
+            // --- OTOMATİK ADMİN OLUŞTURMA (SEED DATA) ---
+            // Eğer veritabanında hiç yönetici yoksa, varsayılanı oluştur.
+            var adminList = _adminRepository.GetAll();
+            if (!adminList.Any())
+            {
+                var newAdmin = new Admin
+                {
+                    Email = "admin@gmail.com",
+                    Password = "1234"
+                };
+                _adminRepository.Add(newAdmin);
+                _adminRepository.Save();
+            }
+            // ---------------------------------------------
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            // Ürünleri listele
+            var products = _productRepository.GetAll();
+            return View(products);
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
     }
 }

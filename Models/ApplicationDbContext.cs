@@ -8,13 +8,8 @@ namespace WebApplication1.Models
         {
         }
 
-        // Define your DbSets here. For example:
-        public DbSet<TextEntry> TextEntries { get; set; }
-    }
-
-    public class TextEntry
-    {
-        public int Id { get; set; }
-        public string Content { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Admin> Admins { get; set; }
     }
 }
