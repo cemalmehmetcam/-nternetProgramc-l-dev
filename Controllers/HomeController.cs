@@ -9,9 +9,7 @@ namespace WebApplication1.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IRepository<Product> _productRepository;
-        private readonly IRepository<Admin> _adminRepository; // Admin işlemleri için bunu ekledik
-
-        // Constructor'a (yapıcı metod) Admin Repository'i de ekliyoruz
+        private readonly IRepository<Admin> _adminRepository;
         public HomeController(ILogger<HomeController> logger, IRepository<Product> productRepository, IRepository<Admin> adminRepository)
         {
             _logger = logger;
@@ -21,8 +19,6 @@ namespace WebApplication1.Controllers
 
         public IActionResult Index()
         {
-            // --- OTOMATİK ADMİN OLUŞTURMA (SEED DATA) ---
-            // Eğer veritabanında hiç yönetici yoksa, varsayılanı oluştur.
             var adminList = _adminRepository.GetAll();
             if (!adminList.Any())
             {
@@ -34,9 +30,6 @@ namespace WebApplication1.Controllers
                 _adminRepository.Add(newAdmin);
                 _adminRepository.Save();
             }
-            // ---------------------------------------------
-
-            // Ürünleri listele
             var products = _productRepository.GetAll();
             return View(products);
         }

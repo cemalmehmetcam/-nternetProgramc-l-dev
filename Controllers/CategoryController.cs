@@ -5,7 +5,7 @@ using WebApplication1.Repositories;
 
 namespace WebApplication1.Controllers
 {
-    [Authorize] // Sadece giriş yapanlar görebilir
+    [Authorize]
     public class CategoryController : Controller
     {
         private readonly IRepository<Category> _categoryRepository;
@@ -14,29 +14,22 @@ namespace WebApplication1.Controllers
         {
             _categoryRepository = categoryRepository;
         }
-
-        // 1. LİSTELEME SAYFASI
         public IActionResult Index()
         {
             var categories = _categoryRepository.GetAll();
             return View(categories);
         }
 
-        // 2. EKLEME SAYFASI (Formu Göster)
+
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
-
-        // 2. EKLEME İŞLEMİ (Veriyi Kaydet)
         [HttpPost]
         public IActionResult Create(Category category)
         {
-            // --- BU SATIRI EKLE (Hayat Kurtaran Kod) ---
-            // Bu kod, "Products listesi boş" hatasını görmezden gelmesini sağlar.
             ModelState.Remove("Products");
-            // -------------------------------------------
 
             if (ModelState.IsValid)
             {
@@ -45,12 +38,8 @@ namespace WebApplication1.Controllers
                 TempData["success"] = "Kategori başarıyla oluşturuldu.";
                 return RedirectToAction("Index");
             }
-
-            // Eğer hala hata varsa, hatanın ne olduğunu görmek için bunu ekrana yazdıralım:
             return View(category);
         }
-
-        // 3. DÜZENLEME SAYFASI (Mevcut Veriyi Getir)
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -61,8 +50,6 @@ namespace WebApplication1.Controllers
 
             return View(category);
         }
-
-        // 3. DÜZENLEME İŞLEMİ (Güncellemeyi Kaydet)
         [HttpPost]
         public IActionResult Edit(Category category)
         {
@@ -75,7 +62,6 @@ namespace WebApplication1.Controllers
             }
             return View(category);
         }
-        // --- AJAX İLE SİLME İŞLEMİ (Bu metot JSON döndürür) ---
         [HttpDelete]
         public IActionResult DeleteAjax(int id)
         {

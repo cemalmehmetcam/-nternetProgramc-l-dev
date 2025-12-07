@@ -10,11 +10,8 @@ namespace WebApplication1.Controllers
     public class AdminController : Controller
     {
         private readonly IRepository<Admin> _adminRepository;
-        // Sayıları çekmek için bu ikisini ekledik
         private readonly IRepository<Category> _categoryRepository;
         private readonly IRepository<Product> _productRepository;
-
-        // Constructor'da (Yapıcı Metot) hepsini istiyoruz
         public AdminController(IRepository<Admin> adminRepository, IRepository<Category> categoryRepository, IRepository<Product> productRepository)
         {
             _adminRepository = adminRepository;
@@ -24,14 +21,11 @@ namespace WebApplication1.Controllers
 
         public IActionResult Index()
         {
-            // Sayıları veritabanından çekip ViewBag kutusuna koyuyoruz
             ViewBag.KategoriSayisi = _categoryRepository.GetAll().Count();
             ViewBag.UrunSayisi = _productRepository.GetAll().Count();
 
             return View();
         }
-
-        // --- PROFİL KISIMLARI (DOKUNMA AYNI KALSIN) ---
         [HttpGet]
         public IActionResult Profile()
         {

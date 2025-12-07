@@ -15,18 +15,15 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login"; // Giriþ yapmamýþ kiþi buraya atýlacak
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(20); // 20 dk sonra oturum düþer
+        options.LoginPath = "/Account/Login";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
     });
 
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
-
-// ... (Geri kalan kýsýmlar ayný kalabilir) ...
-
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // Bu eksikti, CSS/JS için gerekli
+app.UseStaticFiles();
 
 app.UseRouting();
 

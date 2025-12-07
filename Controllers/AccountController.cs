@@ -27,13 +27,10 @@ namespace WebApplication1.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Veritabanında bu mail ve şifreye sahip yönetici var mı?
-                // Not: Gerçek projede şifreler hashlenmeli, şimdilik düz metin bakıyoruz.
                 var admin = _adminRepository.GetAll().FirstOrDefault(x => x.Email == model.Email && x.Password == model.Password);
 
                 if (admin != null)
                 {
-                    // Giriş Başarılı, Cookie oluşturalım
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, admin.Email),
@@ -44,8 +41,6 @@ namespace WebApplication1.Controllers
                     var authProperties = new AuthenticationProperties();
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-
-                    // Yönetici paneline yönlendir (Henüz yapmadık ama adı Admin olacak)
                     return RedirectToAction("Index", "Admin");
                 }
                 else
