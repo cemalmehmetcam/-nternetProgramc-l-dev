@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Muhammed\\Source\\Repos\\20241129047\\WebApplication1.csproj": {}
+    "C:\\Users\\Muhammed\\OneDrive\\Masaüstü\\20241129047IP\\WebApplication1.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Muhammed\\Source\\Repos\\20241129047\\WebApplication1.csproj": {
+    "C:\\Users\\Muhammed\\OneDrive\\Masaüstü\\20241129047IP\\WebApplication1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Muhammed\\Source\\Repos\\20241129047\\WebApplication1.csproj",
+        "projectUniqueName": "C:\\Users\\Muhammed\\OneDrive\\Masaüstü\\20241129047IP\\WebApplication1.csproj",
         "projectName": "WebApplication1",
-        "projectPath": "C:\\Users\\Muhammed\\Source\\Repos\\20241129047\\WebApplication1.csproj",
+        "projectPath": "C:\\Users\\Muhammed\\OneDrive\\Masaüstü\\20241129047IP\\WebApplication1.csproj",
         "packagesPath": "C:\\Users\\Muhammed\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Muhammed\\Source\\Repos\\20241129047\\obj\\",
+        "outputPath": "C:\\Users\\Muhammed\\OneDrive\\Masaüstü\\20241129047IP\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -50,6 +50,10 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.11, )"
+            },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",

@@ -2,16 +2,22 @@
 
 @{
     ViewData["Title"] = "Ürünler";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    // Yönetici ise Admin panelini, değilse Kullanıcı arayüzünü kullan
+    Layout = User.IsInRole("Admin") ? "~/Views/Shared/_AdminLayout.cshtml" : "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container-fluid px-4">
     <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Ürün Yönetimi</h1>
-        <a asp-action="Create" class="btn btn-success">
-            <i class="fas fa-plus"></i> Yeni Ürün Ekle
-        </a>
+        <h1 class="h3 mb-0 text-gray-800">@(User.IsInRole("Admin") ? "Ürün Yönetimi" : "Ürünlerimiz")</h1>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-success">
+                <i class="fas fa-plus"></i> Yeni Ürün Ekle
+            </a>
+        }
     </div>
+
     <div class="card mb-3 p-3">
         <form asp-controller="Product" asp-action="Index" method="get">
             <div class="row align-items-center">
@@ -23,9 +29,18 @@
                         <option value="0">-- Tüm Kategoriler --</option>
                     </select>
                 </div>
+                @if (!User.IsInRole("Admin"))
+                {
+                    <div class="col-md-6 text-end">
+                        <a asp-controller="Cart" asp-action="Index" class="btn btn-warning">
+                            <i class="fas fa-shopping-cart"></i> Sepetim
+                        </a>
+                    </div>
+                }
             </div>
         </form>
     </div>
+
     <div class="card shadow mb-4">
         <div class="card-body">
             <div class="table-responsive">
@@ -36,7 +51,7 @@
                             <th>Ürün Adı</th>
                             <th>Fiyat</th>
                             <th>Kategori</th>
-                            <th>İşlemler</th>
+                            <th style="width: 200px;">İşlemler</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -50,20 +65,31 @@
                                     }
                                     else
                                     {
-                                        <span>Resim Yok</span>
+                                        <span class="text-muted">Resim Yok</span>
                                     }
                                 </td>
-                                <td>@item.Name</td>
-                                <td>@item.Price.ToString("C")</td>
-                                <td>@item.Category.Name</td>
-                                <td>
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
+                                <td class="align-middle">@item.Name</td>
+                                <td class="align-middle">@item.Price.ToString("C")</td>
+                                <td class="align-middle">@item.Category.Name</td>
+                                <td class="align-middle text-center">
 
-                                    <a onclick="Delete('/Product/DeleteAjax/@item.Id')" class="btn btn-danger btn-sm text-white" style="cursor:pointer">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+
+                                        <a onclick="Delete('/Product/DeleteAjax/@item.Id')" class="btn btn-danger btn-sm text-white" style="cursor:pointer">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-controller="Cart" asp-action="AddToCart" asp-route-productId="@item.Id" class="btn btn-primary btn-sm w-100">
+                                            <i class="fas fa-cart-plus"></i> Sepete Ekle
+                                        </a>
+                                    }
+
                                 </td>
                             </tr>
                         }

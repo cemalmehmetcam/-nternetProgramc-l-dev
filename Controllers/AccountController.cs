@@ -1,19 +1,18 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using WebApplication1.Models;
-using WebApplication1.Repositories; // Repository kullanacağız
 
 namespace WebApplication1.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly IRepository<Admin> _adminRepository;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public AccountController(IRepository<Admin> adminRepository)
+        public AccountController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
         {
-            _adminRepository = adminRepository;
+            _signInManager = signInManager;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -27,34 +26,43 @@ namespace WebApplication1.Controllers
         {
             if (ModelState.IsValid)
             {
-                var admin = _adminRepository.GetAll().FirstOrDefault(x => x.Email == model.Email && x.Password == model.Password);
+                // Identity ile kullanıcı adı (email) ve şifre kontrolü
+                // UserName olarak Email kullandığımızı varsayıyorum.
+                var user = await _userManager.FindByEmailAsync(model.Email);
 
-                if (admin != null)
+                if (user != null)
                 {
-                    var claims = new List<Claim>
+                    var result = await _signInManager.PasswordSignInAsync(user, model.Password, isPersistent: false, lockoutOnFailure: false);
+
+                    if (result.Succeeded)
                     {
-                        new Claim(ClaimTypes.Name, admin.Email),
-                        new Claim(ClaimTypes.Role, "Admin")
-                    };
-
-                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    var authProperties = new AuthenticationProperties();
-
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-                    return RedirectToAction("Index", "Admin");
+                        return RedirectToAction("Index", "Admin");
+                    }
                 }
-                else
-                {
-                    ModelState.AddModelError("", "Hatalı e-posta veya şifre.");
-                }
+
+                ModelState.AddModelError("", "Hatalı e-posta veya şifre.");
             }
             return View(model);
         }
 
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
+        }
+
+        // Geçici olarak ilk Admin'i oluşturmak için bir metod (Bunu çalıştırdıktan sonra silebilirsin)
+        [HttpGet]
+        public async Task<IActionResult> CreateTestAdmin()
+        {
+            var user = new IdentityUser { UserName = "admin@test.com", Email = "admin@test.com", EmailConfirmed = true };
+            var result = await _userManager.CreateAsync(user, "123"); // Şifre: 123
+
+            if (result.Succeeded)
+            {
+                return Content("Admin oluşturuldu: admin@test.com / 123");
+            }
+            return Content("Hata: " + string.Join(", ", result.Errors.Select(e => e.Description)));
         }
     }
 }

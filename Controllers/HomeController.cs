@@ -1,37 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.Models;
-using WebApplication1.Repositories;
 using System.Diagnostics;
+using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IRepository<Product> _productRepository;
-        private readonly IRepository<Admin> _adminRepository;
-        public HomeController(ILogger<HomeController> logger, IRepository<Product> productRepository, IRepository<Admin> adminRepository)
+
+        public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            _productRepository = productRepository;
-            _adminRepository = adminRepository;
         }
 
         public IActionResult Index()
         {
-            var adminList = _adminRepository.GetAll();
-            if (!adminList.Any())
-            {
-                var newAdmin = new Admin
-                {
-                    Email = "admin@gmail.com",
-                    Password = "1234"
-                };
-                _adminRepository.Add(newAdmin);
-                _adminRepository.Save();
-            }
-            var products = _productRepository.GetAll();
-            return View(products);
+            return View();
         }
 
         public IActionResult Privacy()
