@@ -57,13 +57,12 @@ namespace WebApplication1.Controllers
 
             return View(cartItems);
         }
-
-        // Siparişi Onayla ve Kaydet
         [HttpPost]
-        public async Task<IActionResult> Checkout(string address) // Adres bilgisini formdan alacağız
+        public async Task<IActionResult> Checkout(string address)
         {
             var user = await _userManager.GetUserAsync(User);
 
+            // Sepeti getir (Product tablosunu dahil ederek)
             var cartItems = await _context.CartItems
                 .Include(c => c.Product)
                 .Where(c => c.UserId == user.Id)
@@ -71,7 +70,25 @@ namespace WebApplication1.Controllers
 
             if (cartItems.Count == 0) return RedirectToAction("Index", "Cart");
 
-            // 1. Yeni Sipariş Oluştur
+            // --- STOK KONTROLÜ VE DÜŞME İŞLEMİ ---
+            foreach (var item in cartItems)
+            {
+                // 1. Stok Yeterli mi?
+                if (item.Product.Stock < item.Quantity)
+                {
+                    TempData["Error"] = $"Hata: {item.Product.Name} ürününden stokta sadece {item.Product.Stock} adet kaldı.";
+                    return RedirectToAction("Index", "Cart");
+                }
+
+                // 2. Stoktan Düş ve Satılanı Arttır
+                item.Product.Stock -= item.Quantity;
+                item.Product.SoldCount += item.Quantity;
+
+                // Product tablosunu güncellemek için işaretle
+                _context.Products.Update(item.Product);
+            }
+            // -------------------------------------
+
             var order = new Order
             {
                 UserId = user.Id,
@@ -81,33 +98,26 @@ namespace WebApplication1.Controllers
                 OrderItems = new List<OrderItem>()
             };
 
-            // 2. Sepet Detaylarını Sipariş Detaylarına Dönüştür
             foreach (var item in cartItems)
             {
-                var orderItem = new OrderItem
+                order.OrderItems.Add(new OrderItem
                 {
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,
                     UnitPrice = item.Product.Price
-                };
-                order.OrderItems.Add(orderItem);
+                });
             }
 
             _context.Orders.Add(order);
-
-            // 3. Sepeti Temizle
             _context.CartItems.RemoveRange(cartItems);
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); // Hem siparişi kaydeder hem de ürün stoklarını günceller
 
-            // --- SIGNALR BİLDİRİMİ BURADA ---
-            // Sipariş veritabanına işlendikten sonra adminlere bildirim gönderiyoruz.
-            await _hubContext.Clients.All.SendAsync("ReceiveOrderNotification", $"Yeni bir sipariş alındı! Tutar: {order.TotalAmount:C}");
-            // --------------------------------
+            // SignalR Bildirimi
+            await _hubContext.Clients.All.SendAsync("ReceiveOrderNotification", $"Yeni Sipariş! Tutar: {order.TotalAmount:C}");
 
             return RedirectToAction("Success");
         }
-
         public IActionResult Success()
         {
             return View();

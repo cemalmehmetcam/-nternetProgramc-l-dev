@@ -27,5 +27,8 @@ namespace WebApplication1.Models
 
         [ForeignKey("CategoryId")]
         public virtual Category Category { get; set; }
+
+        public int Stock { get; set; } = 100; // Varsayılan stok
+        public int SoldCount { get; set; } = 0; // Kaç tane satıldı?
     }
 }

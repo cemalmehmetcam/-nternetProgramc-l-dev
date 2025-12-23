@@ -1,0 +1,62 @@
+﻿@model List<WebApplication1.Models.SupportTicket>
+
+@{
+    ViewData["Title"] = "Destek Talepleri";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Destek Talepleri</h1>
+
+    <div class="card mb-4 mt-3">
+        <div class="card-header">
+            <i class="fas fa-envelope me-1"></i> Gelen Mesajlar
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Kullanıcı</th>
+                        <th>Konu</th>
+                        <th>Mesaj</th>
+                        <th>Durum</th>
+                        <th>Tarih</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.User.UserName <br> <small class="text-muted">@item.User.Email</small></td>
+                            <td>@item.Subject</td>
+                            <td>@item.Message</td>
+                            <td>
+                                @if (item.Status == "Beklemede")
+                                {
+                                    <span class="badge bg-warning text-dark">Beklemede</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">Çözüldü</span>
+                                }
+                            </td>
+                            <td>@item.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>
+                                @if (item.Status == "Beklemede")
+                                {
+                                    <form asp-action="CloseTicket" method="post">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-check"></i> Çözüldü İşaretle
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,29 +1,35 @@
 ﻿@model WebApplication1.Models.SupportTicket
 @{
-    ViewData["Title"] = "Yeni Destek Talebi";
+    ViewData["Title"] = "Adminle İletişime Geç";
 }
 
-<div class="container mt-5">
+<div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">Yeni Destek Talebi</div>
-                <div class="card-body">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white fw-bold">
+                    <i class="fas fa-paper-plane me-2"></i> Admine Mesaj Gönder
+                </div>
+                <div class="card-body p-4">
                     <form asp-action="Create" method="post">
                         <div class="mb-3">
-                            <label class="form-label">Konu</label>
+                            <label class="form-label fw-bold">Konu</label>
                             <select asp-for="Subject" class="form-select">
-                                <option>İade/Değişim</option>
-                                <option>Sipariş Durumu</option>
+                                <option>Siparişim Hakkında</option>
+                                <option>İade Talebi</option>
                                 <option>Adres Değişikliği</option>
+                                <option>Ürün Sorusu</option>
                                 <option>Diğer</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Mesajınız</label>
-                            <textarea asp-for="Message" class="form-control" rows="4" required></textarea>
+                            <label class="form-label fw-bold">Mesajınız</label>
+                            <textarea asp-for="Message" class="form-control" rows="5" placeholder="Mesajınızı buraya yazın..." required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Gönder</button>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary rounded-pill">Gönder</button>
+                            <a asp-action="Index" class="btn btn-link text-muted mt-2">İptal</a>
+                        </div>
                     </form>
                 </div>
             </div>

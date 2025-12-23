@@ -55,5 +55,18 @@ namespace WebApplication1.Controllers
             var tickets = await _context.SupportTickets.Include(t => t.User).OrderByDescending(t => t.CreatedDate).ToListAsync();
             return View(tickets);
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> CloseTicket(int id)
+        {
+            var ticket = await _context.SupportTickets.FindAsync(id);
+            if (ticket != null)
+            {
+                ticket.Status = "Çözüldü";
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("AdminList");
+        }
     }
 }

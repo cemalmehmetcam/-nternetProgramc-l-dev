@@ -7,7 +7,7 @@
 
 @if (User.IsInRole("Admin"))
 {
-    // --- ADMIN İÇİN TABLO GÖRÜNÜMÜ ---
+    // --- ADMIN İÇİN TABLO GÖRÜNÜMÜ (GÜNCELLENDİ: STOK VE SATIŞ EKLENDİ) ---
     <div class="container-fluid px-4">
         <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
             <h1 class="h3 mb-0 text-gray-800">Ürün Yönetimi</h1>
@@ -18,7 +18,15 @@
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover">
                         <thead class="table-dark">
-                            <tr><th>Resim</th><th>Ürün Adı</th><th>Fiyat</th><th>Kategori</th><th>İşlemler</th></tr>
+                            <tr>
+                                <th>Resim</th>
+                                <th>Ürün Adı</th>
+                                <th>Fiyat</th>
+                                <th>Kategori</th>
+                                <th>Stok</th>
+                                <th>Satılan</th>
+                                <th>İşlemler</th>
+                            </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in Model)
@@ -33,6 +41,18 @@
                                     <td>@item.Name</td>
                                     <td>@item.Price.ToString("C")</td>
                                     <td>@item.Category.Name</td>
+
+                                    <td>
+                                        @if (item.Stock < 10)
+                                        {
+                                            <span class="badge bg-danger">@item.Stock (Kritik)</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">@item.Stock</span>
+                                        }
+                                    </td>
+                                    <td>@item.SoldCount</td>
                                     <td>
                                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
                                         <a onclick="Delete('/Product/DeleteAjax/@item.Id')" class="btn btn-danger btn-sm text-white" style="cursor:pointer"><i class="fas fa-trash"></i></a>
@@ -48,7 +68,7 @@
 }
 else
 {
-    // --- MÜŞTERİ İÇİN KART (GRID) GÖRÜNÜMÜ ---
+    // --- MÜŞTERİ İÇİN KART (GRID) GÖRÜNÜMÜ (AYNI KALDI) ---
     <div class="container mt-4">
         <div class="row align-items-center mb-4">
             <div class="col-md-6">
@@ -110,9 +130,16 @@ else
                                 <span class="product-price">@item.Price.ToString("C")</span>
 
                                 <div class="d-grid">
-                                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-productId="@item.Id" class="btn btn-outline-primary btn-sm rounded-pill">
-                                        <i class="fas fa-cart-plus me-1"></i> Sepete Ekle
-                                    </a>
+                                    @if (item.Stock > 0)
+                                    {
+                                        <a asp-controller="Cart" asp-action="AddToCart" asp-route-productId="@item.Id" class="btn btn-outline-primary btn-sm rounded-pill">
+                                            <i class="fas fa-cart-plus me-1"></i> Sepete Ekle
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-secondary btn-sm rounded-pill" disabled>Tükendi</button>
+                                    }
                                 </div>
                             </div>
                         </div>

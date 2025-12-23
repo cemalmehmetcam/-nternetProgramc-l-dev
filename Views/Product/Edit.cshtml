@@ -40,6 +40,12 @@
                             <span asp-validation-for="Price" class="text-danger"></span>
                         </div>
 
+                        <div class="form-floating mb-3">
+                            <input asp-for="Stock" class="form-control" placeholder="Stok Adedi" />
+                            <label asp-for="Stock">Stok Adedi</label>
+                            <span asp-validation-for="Stock" class="text-danger"></span>
+                        </div>
+
                         <div class="mb-3">
                             <label asp-for="Description" class="form-label">Açıklama</label>
                             <textarea asp-for="Description" class="form-control" rows="3"></textarea>
