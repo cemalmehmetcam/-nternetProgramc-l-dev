@@ -71,7 +71,7 @@
             margin-left: 0;
         }
 
-        /* DÜZELTME BURADA YAPILDI: @@media olarak değiştirildi */
+        /* HATA BURADAYDI: @@media OLARAK DÜZELTİLDİ */
         @@media (min-width: 768px) {
             #sidebar-wrapper {
                 margin-left: 0;
@@ -114,6 +114,10 @@
                     <i class="fas fa-headset me-2"></i> Destek Talepleri
                 </a>
 
+                <a class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")" href="/Users/Index">
+                    <i class="fas fa-users me-2"></i> Üyeler
+                </a>
+
                 <a class="list-group-item list-group-item-action mt-3" href="/" target="_blank">
                     <i class="fas fa-globe me-2"></i> Siteye Git
                 </a>
@@ -138,7 +142,6 @@
                                     }
                                     else
                                     {
-
                                         <text>Yönetici</text>
                                     }
                                 </span>
